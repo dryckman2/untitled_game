@@ -23,13 +23,17 @@ impl Character {
         }
     }
 
+    ///Place Character on gb
     pub fn place(&self, gb: &mut Vec<Vec<Tile>>) {
         get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr());
     }
 
+    ///Clone current sprite for Character
     pub fn clone_curr(&self) -> Sprite {
         self.img[self.curr_sprite][0].clone()
     }
+
+    ///Change the current sprite for character
     pub fn change_curr(&mut self, gb: &mut Vec<Vec<Tile>>) {
         get_unwrap(gb, self.x_pos, self.y_pos).remove();
         self.curr_sprite = (self.curr_sprite + 1) % 4;

@@ -1,9 +1,10 @@
 mod character;
+mod color;
 mod file_utils;
 mod sprite;
+mod sprite_sheet;
 mod tile;
 mod traits;
-mod sprite_sheet;
 
 use crate::character::Character;
 use crate::file_utils::load_png_file;
@@ -52,6 +53,7 @@ fn main() {
     }
 }
 
+///Produces output buffer from game board, SHOULD_DO: Optimize
 fn produce_buffer(board: &Vec<Vec<Tile>>) -> Vec<u32> {
     let mut buffer: Vec<u32> = vec![0; WIDTH * WIDTH];
 
@@ -61,7 +63,7 @@ fn produce_buffer(board: &Vec<Vec<Tile>>) -> Vec<u32> {
             let offset = 32 * (i * WIDTH + j);
             for (y, col) in str.iter().enumerate() {
                 for (x, pixel) in col.iter().enumerate() {
-                    buffer[offset + y * WIDTH + x] = *pixel;
+                    buffer[offset + y * WIDTH + x] = pixel.c;
                 }
             }
             buffer[offset] = 0xffffff00 //TODO: Remove, Creates Grid Markers
@@ -70,7 +72,7 @@ fn produce_buffer(board: &Vec<Vec<Tile>>) -> Vec<u32> {
 
     buffer
 }
-
+///Short hand for crappy unwrap
 fn get_unwrap(n: &mut Vec<Vec<Tile>>, i: usize, j: usize) -> &mut Tile {
     n.get_mut(i).unwrap().get_mut(j).unwrap()
 }

@@ -1,5 +1,6 @@
 use crate::tile::Tile;
 
+///Structs that can try to move
 pub trait Move {
     fn try_down(&mut self, gb: &mut Vec<Vec<Tile>>);
     fn try_up(&mut self, gb: &mut Vec<Vec<Tile>>);
