@@ -6,6 +6,14 @@ pub struct Tile {
     pub(crate) vis_queue: Vec<Sprite>,
 }
 
+#[derive(PartialEq)]
+pub enum Direction {
+    North,
+    East,
+    South,
+    West,
+}
+
 impl Tile {
     ///Place sprite in visibility queue
     pub fn place(&mut self, to_place: Sprite) {

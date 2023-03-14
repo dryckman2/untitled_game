@@ -17,7 +17,7 @@ use std::vec;
 
 const WIDTH: usize = 640;
 const HEIGHT: usize = 480;
-const GRID: bool = fasle;
+const GRID: bool = false;
 
 fn main() {
     let background = Tile {
@@ -47,9 +47,11 @@ fn main() {
             ch.try_right(&mut game_board);
         }
 
-        if ticks % 25 == 0 {
-            ch.change_curr(&mut game_board);
+        if window.is_key_pressed(Key::J, KeyRepeat::No) {
+            ch.attack();
         }
+
+        ch.tick_character(&mut game_board);
 
         let buffer: Vec<u32> = produce_buffer(&game_board);
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
@@ -87,6 +89,7 @@ fn produce_buffer(board: &Vec<Vec<Tile>>) -> Vec<u32> {
 
     buffer
 }
+
 ///Short hand for crappy unwrap
 fn get_unwrap(n: &mut Vec<Vec<Tile>>, i: usize, j: usize) -> &mut Tile {
     n.get_mut(i).unwrap().get_mut(j).unwrap()
