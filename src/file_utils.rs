@@ -10,7 +10,7 @@ pub fn load_png_file(filename: &str) -> Sprite {
     for i in 0..b_img.height() {
         let mut temp = vec![];
         for j in 0..b_img.width() {
-            let mut p = b_img[(j, i)];
+            let p = b_img[(j, i)];
             let color = Color::from_f32_channel(p.channels());
             temp.push(color);
         }

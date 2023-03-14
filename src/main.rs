@@ -17,6 +17,7 @@ use std::vec;
 
 const WIDTH: usize = 640;
 const HEIGHT: usize = 480;
+const GRID: bool = fasle;
 
 fn main() {
     let background = Tile {
@@ -27,6 +28,8 @@ fn main() {
     let mut ch = Character::create();
 
     ch.place(&mut game_board);
+
+    let mut ticks = 0;
 
     let mut window =
         Window::new("Untitled 2d Game", WIDTH, HEIGHT, WindowOptions::default()).unwrap();
@@ -43,13 +46,15 @@ fn main() {
         if window.is_key_pressed(Key::D, KeyRepeat::Yes) {
             ch.try_right(&mut game_board);
         }
-        if window.is_key_pressed(Key::Space, KeyRepeat::Yes) {
+
+        if ticks % 25 == 0 {
             ch.change_curr(&mut game_board);
         }
 
         let buffer: Vec<u32> = produce_buffer(&game_board);
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
         sleep(Duration::from_millis(16));
+        ticks += 1;
     }
 }
 
@@ -66,7 +71,17 @@ fn produce_buffer(board: &Vec<Vec<Tile>>) -> Vec<u32> {
                     buffer[offset + y * WIDTH + x] = pixel.c;
                 }
             }
-            buffer[offset] = 0xffffff00 //TODO: Remove, Creates Grid Markers
+            if GRID {
+                buffer[offset] = 0xffffff00;
+                buffer[offset + 1] = 0xffffff00;
+                buffer[offset + WIDTH] = 0xffffff00;
+                if offset != 0 {
+                    buffer[offset - 1] = 0xffffff00;
+                }
+                if offset > WIDTH {
+                    buffer[offset - WIDTH] = 0xffffff00;
+                }
+            }
         }
     }
 

@@ -9,35 +9,49 @@ pub struct Character {
     x_pos: usize,
     y_pos: usize,
     img: SpriteSheet,
-    curr_sprite: usize,
+    ticks: usize,
+    current_sprite: Sprite,
+    idle_cycle: Vec<(usize, usize)>,
+    left_flip: bool,
 }
 
 impl Character {
     pub fn create() -> Character {
         let img = SpriteSheet::split_sprite(load_png_file("txr/character.png"));
+        let start = img.get((1, 1)).clone();
         Character {
             x_pos: 3,
             y_pos: 2,
             img,
-            curr_sprite: 0,
+            ticks: 0,
+            current_sprite: start,
+            idle_cycle: vec![(0, 0), (1, 0), (1, 1)],
+            left_flip: false,
         }
     }
 
     ///Place Character on gb
     pub fn place(&self, gb: &mut Vec<Vec<Tile>>) {
-        get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr());
+        get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr().clone());
     }
 
     ///Clone current sprite for Character
-    pub fn clone_curr(&self) -> Sprite {
-        self.img[self.curr_sprite][0].clone()
+    pub fn clone_curr(&self) -> &Sprite {
+        &self.current_sprite
     }
 
     ///Change the current sprite for character
     pub fn change_curr(&mut self, gb: &mut Vec<Vec<Tile>>) {
         get_unwrap(gb, self.x_pos, self.y_pos).remove();
-        self.curr_sprite = (self.curr_sprite + 1) % 4;
-        get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr());
+        self.ticks = self.ticks + 1;
+        self.current_sprite = self
+            .img
+            .get(self.idle_cycle[self.ticks % self.idle_cycle.len()])
+            .clone();
+        if self.left_flip {
+            self.current_sprite.reverse();
+        }
+        get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr().clone());
     }
 }
 
@@ -46,7 +60,7 @@ impl Move for Character {
         if self.y_pos != 14 {
             get_unwrap(gb, self.x_pos, self.y_pos).remove();
             self.y_pos += 1;
-            get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr());
+            get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr().clone());
         }
     }
 
@@ -54,7 +68,7 @@ impl Move for Character {
         if self.y_pos != 0 {
             get_unwrap(gb, self.x_pos, self.y_pos).remove();
             self.y_pos -= 1;
-            get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr());
+            get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr().clone());
         }
     }
 
@@ -62,7 +76,11 @@ impl Move for Character {
         if self.x_pos != 0 {
             get_unwrap(gb, self.x_pos, self.y_pos).remove();
             self.x_pos -= 1;
-            get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr());
+            if self.left_flip == false {
+                self.current_sprite.reverse();
+                self.left_flip = true;
+            }
+            get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr().clone());
         }
     }
 
@@ -70,7 +88,11 @@ impl Move for Character {
         if self.x_pos != 19 {
             get_unwrap(gb, self.x_pos, self.y_pos).remove();
             self.x_pos += 1;
-            get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr());
+            if self.left_flip == true {
+                self.current_sprite.reverse();
+                self.left_flip = false;
+            }
+            get_unwrap(gb, self.x_pos, self.y_pos).place(self.clone_curr().clone());
         }
     }
 }

@@ -1,4 +1,4 @@
-use crate::color::{Color, IGNORE_COLOR};
+use crate::color::Color;
 use std::slice::Iter;
 
 #[derive(Clone)]
@@ -18,6 +18,10 @@ impl Sprite {
 
     pub fn iter(&self) -> Iter<'_, Vec<Color>> {
         self.img.iter()
+    }
+
+    pub fn reverse(&mut self) {
+        self.img.iter_mut().for_each(|n| n.reverse());
     }
 
     pub fn get_mut(&mut self, i: usize) -> &mut Vec<Color> {

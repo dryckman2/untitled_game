@@ -1,7 +1,8 @@
-use crate::color::{Color, IGNORE_COLOR};
+use crate::color::Color;
 use crate::sprite::Sprite;
 use std::ops::Index;
 
+#[derive(Clone)]
 pub struct SpriteSheet {
     sheet: Vec<Vec<Sprite>>,
 }
@@ -24,8 +25,10 @@ impl SpriteSheet {
             }
             set.sheet.push(temp);
         }
-        println!("{}  {}", set.sheet.len(), set.sheet[0].len());
         set
+    }
+    pub fn get(&self, i: (usize, usize)) -> &Sprite {
+        &self.sheet[i.0][i.1]
     }
 }
 

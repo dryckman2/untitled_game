@@ -1,4 +1,3 @@
-use crate::color::IGNORE_COLOR;
 use crate::sprite::Sprite;
 
 #[derive(Clone)]
