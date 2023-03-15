@@ -18,6 +18,7 @@ use std::vec;
 const WIDTH: usize = 640;
 const HEIGHT: usize = 480;
 const GRID: bool = false;
+const GRID_COLOR: u32 = 0xFFFFFF00;
 
 fn main() {
     let background = Tile {
@@ -28,8 +29,6 @@ fn main() {
     let mut ch = Character::create();
 
     ch.place(&mut game_board);
-
-    let mut ticks = 0;
 
     let mut window =
         Window::new("Untitled 2d Game", WIDTH, HEIGHT, WindowOptions::default()).unwrap();
@@ -56,7 +55,6 @@ fn main() {
         let buffer: Vec<u32> = produce_buffer(&game_board);
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
         sleep(Duration::from_millis(16));
-        ticks += 1;
     }
 }
 
@@ -74,14 +72,14 @@ fn produce_buffer(board: &Vec<Vec<Tile>>) -> Vec<u32> {
                 }
             }
             if GRID {
-                buffer[offset] = 0xffffff00;
-                buffer[offset + 1] = 0xffffff00;
-                buffer[offset + WIDTH] = 0xffffff00;
+                buffer[offset] = GRID_COLOR;
+                buffer[offset + 1] = GRID_COLOR;
+                buffer[offset + WIDTH] = GRID_COLOR;
                 if offset != 0 {
-                    buffer[offset - 1] = 0xffffff00;
+                    buffer[offset - 1] = GRID_COLOR;
                 }
                 if offset > WIDTH {
-                    buffer[offset - WIDTH] = 0xffffff00;
+                    buffer[offset - WIDTH] = GRID_COLOR;
                 }
             }
         }
