@@ -17,18 +17,16 @@ use std::vec;
 
 const WIDTH: usize = 640;
 const HEIGHT: usize = 480;
-const GRID: bool = false;
+const GRID: bool = true;
 const GRID_COLOR: u32 = 0xFFFFFF00;
 
 fn main() {
-    let background = Tile {
-        background: load_png_file("txr/grass_txr.png"),
-        vis_queue: vec![],
-    };
-    let mut game_board: Vec<Vec<Tile>> = vec![vec![background; HEIGHT / 32]; WIDTH / 32];
-    let mut ch = Character::create();
+    let start_state = initialize_world();
+    let mut game_board = start_state.0;
+    let mut ch = start_state.1;
 
-    ch.place(&mut game_board);
+    let mut eni = Character::enemy(3, 3);
+    eni.place(&mut game_board);
 
     let mut window =
         Window::new("Untitled 2d Game", WIDTH, HEIGHT, WindowOptions::default()).unwrap();
@@ -51,7 +49,7 @@ fn main() {
         }
 
         ch.tick_character(&mut game_board);
-
+        eni.tick_character(&mut game_board);
         let buffer: Vec<u32> = produce_buffer(&game_board);
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
         sleep(Duration::from_millis(16));
@@ -71,6 +69,8 @@ fn produce_buffer(board: &Vec<Vec<Tile>>) -> Vec<u32> {
                     buffer[offset + y * WIDTH + x] = pixel.c;
                 }
             }
+
+            //Optional Grid For Debug
             if GRID {
                 buffer[offset] = GRID_COLOR;
                 buffer[offset + 1] = GRID_COLOR;
@@ -91,4 +91,16 @@ fn produce_buffer(board: &Vec<Vec<Tile>>) -> Vec<u32> {
 ///Short hand for crappy unwrap
 fn get_unwrap(n: &mut Vec<Vec<Tile>>, i: usize, j: usize) -> &mut Tile {
     n.get_mut(i).unwrap().get_mut(j).unwrap()
+}
+
+fn initialize_world() -> (Vec<Vec<Tile>>, Character) {
+    let background = Tile {
+        background: load_png_file("txr/grass_txr.png"),
+        vis_queue: vec![],
+    };
+    let mut game_board: Vec<Vec<Tile>> = vec![vec![background; HEIGHT / 32]; WIDTH / 32];
+    let ch = Character::main();
+
+    ch.place(&mut game_board);
+    (game_board, ch)
 }

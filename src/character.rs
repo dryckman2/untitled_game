@@ -18,23 +18,40 @@ pub struct Character {
     left_flip: bool,
     status: CharStatus,
 }
-
+#[derive(PartialEq)]
 pub enum CharStatus {
     IDLING,
     ATTACKING,
 }
 
 impl Character {
-    pub fn create() -> Character {
+    pub fn main() -> Character {
         let img = SpriteSheet::split_sprite(load_png_file("txr/character.png"));
         let start = img.get((1, 1)).clone();
         Character {
-            x_pos: 3,
-            y_pos: 2,
+            x_pos: 10,
+            y_pos: 10,
             img,
             ticks: 0,
             current_sprite: start,
             idle_cycle: vec![(0, 0), (1, 0), (1, 1)],
+            direction: East,
+            left_flip: false,
+            status: IDLING,
+        }
+    }
+
+    ///TODO: Change this to spawn a wave of enemies
+    pub fn enemy(i: usize, j: usize) -> Character {
+        let img = SpriteSheet::split_sprite(load_png_file("txr/enemy.png"));
+        let start = img.get((0, 0)).clone();
+        Character {
+            x_pos: i,
+            y_pos: j,
+            img,
+            ticks: 0,
+            current_sprite: start,
+            idle_cycle: vec![(0, 0), (0, 1)],
             direction: East,
             left_flip: false,
             status: IDLING,
@@ -78,8 +95,10 @@ impl Character {
     }
 
     pub fn attack(&mut self) {
-        self.status = ATTACKING;
-        self.ticks = 0;
+        if self.status == IDLING {
+            self.status = ATTACKING;
+            self.ticks = 0;
+        }
     }
 }
 
